@@ -1,0 +1,1 @@
+# vue_core_mock
