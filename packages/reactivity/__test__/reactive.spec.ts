@@ -36,8 +36,25 @@ describe("reactivity/reactive", () => {
   });
 
   /**
+   * @description only validate the type of object(P.S. Don't include other. e.g. array & map & set.)
+   * */ 
+  test('nested reactives', () => {
+    const original = {
+      nested: {
+        foo: 1,
+      },
+      // array: [{ bar: 2 }],
+    }
+    const observed = reactive(original)
+    expect(isReactive(observed.nested)).toBe(true)
+    
+    // expect(isReactive(observed.array)).toBe(true)
+    // expect(isReactive(observed.array[0])).toBe(true)
+  })
+
+
+  /**
    * @description skip
-   * - nested reactives
    * - observing subtypes of IterableCollections(Map, Set)
    * - observing subtypes of WeakCollections(WeakMap, WeakSet)
    * */
@@ -62,6 +79,7 @@ describe("reactivity/reactive", () => {
     original.bar = 1;
     expect(original.bar).toBe(1);
     expect(observed.bar).toBe(1);
+    
     // delete
     delete original.foo;
     expect("foo" in original).toBe(false);
@@ -75,4 +93,28 @@ describe("reactivity/reactive", () => {
     expect(observed.foo).not.toBe(raw);
     expect(isReactive(observed.foo)).toBe(true);
   });
+
+  test('observing already observed value should return same Proxy', () => {
+    const original = { foo: 1 }
+    const observed = reactive(original)
+    const observed2 = reactive(observed)
+    expect(observed2).toBe(observed)
+  });
+
+  test('observing the same value multiple times should return same Proxy', () => {
+    const original = { foo: 1 }
+    const observed = reactive(original)
+    const observed2 = reactive(original)
+    expect(observed2).toBe(observed)
+  })
+
+  test('should not pollute original object with Proxies', () => {
+    const original: any = { foo: 1 }
+    const original2 = { bar: 2 }
+    const observed = reactive(original)
+    const observed2 = reactive(original2)
+    observed.bar = observed2
+    expect(observed.bar).toBe(observed2)
+    expect(original.bar).toBe(original2)
+  })
 });

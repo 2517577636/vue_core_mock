@@ -15,5 +15,8 @@
     "ts-jest": "^29.1.4",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "vue": "^3.4.27"
   }
 }

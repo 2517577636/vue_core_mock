@@ -25,6 +25,10 @@ export function reactive(target: Target) {
     return;
   }
 
+  if (isReactive(target)) {
+    return target;
+  }
+
   let reactiveProxy = reactiveMap.get(target);
 
   if (!reactiveProxy) {
@@ -34,7 +38,10 @@ export function reactive(target: Target) {
           return true;
         }
 
-        const res = Reflect.get(target, property, receiver);
+        let res = Reflect.get(target, property, receiver);
+        if (isObject(res)) {
+          res = reactive(res);
+        }
 
         let depsMap = targetMap.get(target);
         if (!depsMap) {
@@ -53,7 +60,11 @@ export function reactive(target: Target) {
       },
 
       set(target, property, newValue, receiver) {
-        Reflect.set(target, property, newValue, receiver);
+        let newVal = newValue;
+        if (isObject(newVal)) {
+          newVal = reactive(newValue);
+        }
+        Reflect.set(target, property, newVal, receiver);
 
         let depsMap = targetMap.get(target);
         if (!depsMap) {
