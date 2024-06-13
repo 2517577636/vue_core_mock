@@ -2,7 +2,7 @@ import "./style.css";
 import typescriptLogo from "./typescript.svg";
 import viteLogo from "/vite.svg";
 import { setupCounter } from "./counter.ts";
-import "./mock/vue.core.mock.ts";
+// import "./mock/vue.core.mock.ts";
 import "./mock/self.mock.ts";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `

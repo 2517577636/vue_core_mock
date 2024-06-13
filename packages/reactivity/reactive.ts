@@ -8,6 +8,7 @@ const targetMap = new WeakMap<Target, any>();
 type Dep = Map<Function, number>;
 export enum ReactiveFlags {
   v_reactive = "v_reactive",
+  v_raw = "v_raw",
 }
 
 export interface Target {
@@ -36,6 +37,8 @@ export function reactive(target: Target) {
       get(target, property, receiver) {
         if (property === ReactiveFlags.v_reactive) {
           return true;
+        } else if (property === ReactiveFlags.v_raw) {
+          return target;
         }
 
         let res = Reflect.get(target, property, receiver);
@@ -61,9 +64,10 @@ export function reactive(target: Target) {
 
       set(target, property, newValue, receiver) {
         let newVal = newValue;
-        if (isObject(newVal)) {
-          newVal = reactive(newValue);
+        if (isReactive(newVal)) {
+          newVal = newVal[ReactiveFlags.v_raw];
         }
+
         Reflect.set(target, property, newVal, receiver);
 
         let depsMap = targetMap.get(target);
