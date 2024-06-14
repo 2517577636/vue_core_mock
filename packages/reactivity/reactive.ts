@@ -106,7 +106,14 @@ export function reactive(target: Target) {
           return true;
         }
 
-        depsMap.delete(property);
+        const deps = depsMap.get(property) as Dep;
+        if (!deps) {
+          return true;
+        }
+        for (let effect of deps.keys()) {
+          effect();
+        }
+
         return true;
       },
     });

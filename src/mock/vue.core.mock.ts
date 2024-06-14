@@ -1,4 +1,4 @@
-import { reactive, isReactive, toRaw, ref, toRef } from "vue";
+import { reactive, isReactive, toRaw, ref, toRef, effect } from "vue";
 
 /* 
 const original: any = { foo: 1 };
@@ -28,3 +28,18 @@ const raw = toRaw(inherted);
 console.log("inherted: ", inherted);
 console.log("toRaw(inherted): ", toRaw(inherted));
  */
+
+/* ============================== effect start ============================ */
+/**
+ * @description should observe delete operation
+ */
+let dummy;
+const obj = reactive<{
+  prop?: string;
+}>({ prop: "value" });
+
+effect(() => (dummy = obj.prop));
+
+console.log("before delete prop: ", dummy);
+delete obj.prop;
+console.log("after delete prop: ", dummy);
