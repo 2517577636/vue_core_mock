@@ -4,7 +4,7 @@
  * skip --> Suspend verification
  */
 
-import { reactive, isReactive } from "../index";
+import { reactive, isReactive, toRaw } from "../index";
 
 describe("reactivity/reactive", () => {
   /**
@@ -37,21 +37,20 @@ describe("reactivity/reactive", () => {
 
   /**
    * @description only validate the type of object(P.S. Don't include other. e.g. array & map & set.)
-   * */ 
-  test('nested reactives', () => {
+   * */
+  test("nested reactives", () => {
     const original = {
       nested: {
         foo: 1,
       },
       // array: [{ bar: 2 }],
-    }
-    const observed = reactive(original)
-    expect(isReactive(observed.nested)).toBe(true)
-    
+    };
+    const observed = reactive(original);
+    expect(isReactive(observed.nested)).toBe(true);
+
     // expect(isReactive(observed.array)).toBe(true)
     // expect(isReactive(observed.array[0])).toBe(true)
-  })
-
+  });
 
   /**
    * @description skip
@@ -79,7 +78,7 @@ describe("reactivity/reactive", () => {
     original.bar = 1;
     expect(original.bar).toBe(1);
     expect(observed.bar).toBe(1);
-    
+
     // delete
     delete original.foo;
     expect("foo" in original).toBe(false);
@@ -94,27 +93,54 @@ describe("reactivity/reactive", () => {
     expect(isReactive(observed.foo)).toBe(true);
   });
 
-  test('observing already observed value should return same Proxy', () => {
-    const original = { foo: 1 }
-    const observed = reactive(original)
-    const observed2 = reactive(observed)
-    expect(observed2).toBe(observed)
+  test("observing already observed value should return same Proxy", () => {
+    const original = { foo: 1 };
+    const observed = reactive(original);
+    const observed2 = reactive(observed);
+    expect(observed2).toBe(observed);
   });
 
-  test('observing the same value multiple times should return same Proxy', () => {
-    const original = { foo: 1 }
-    const observed = reactive(original)
-    const observed2 = reactive(original)
-    expect(observed2).toBe(observed)
-  })
+  test("observing the same value multiple times should return same Proxy", () => {
+    const original = { foo: 1 };
+    const observed = reactive(original);
+    const observed2 = reactive(original);
+    expect(observed2).toBe(observed);
+  });
 
-  test('should not pollute original object with Proxies', () => {
-    const original: any = { foo: 1 }
-    const original2 = { bar: 2 }
-    const observed = reactive(original)
-    const observed2 = reactive(original2)
-    observed.bar = observed2
-    expect(observed.bar).toBe(observed2)
-    expect(original.bar).toBe(original2)
-  })
+  test("should not pollute original object with Proxies", () => {
+    const original: any = { foo: 1 };
+    const original2 = { bar: 2 };
+    const observed = reactive(original);
+    const observed2 = reactive(original2);
+    observed.bar = observed2;
+    expect(observed.bar).toBe(observed2);
+    expect(original.bar).toBe(original2);
+  });
+
+  /**
+   * @description skip
+   * - mutation on objects using reactive as prototype should not trigger
+   *  */
+
+  test("toRaw", () => {
+    const original = { foo: 1 };
+    const observed = reactive(original);
+    expect(toRaw(observed)).toBe(original);
+    expect(toRaw(original)).toBe(original);
+  });
+
+  test("toRaw on object using reactive as prototype", () => {
+    const original = { foo: 1 };
+    const observed = reactive(original);
+    const inherted = Object.create(observed);
+    expect(toRaw(inherted)).toBe(inherted);
+  });
+
+  test("toRaw on user Proxy wrapping reactive", () => {
+    const original = {};
+    const re = reactive(original);
+    const obj = new Proxy(re, {});
+    const raw = toRaw(obj);
+    expect(raw).toBe(original);
+  });
 });

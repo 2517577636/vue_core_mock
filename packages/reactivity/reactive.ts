@@ -13,13 +13,19 @@ export enum ReactiveFlags {
 
 export interface Target {
   v_reactive: boolean;
+  v_raw: any;
 }
 
 export function isReactive(target: unknown): boolean {
   return !!(target as Target)[ReactiveFlags.v_reactive];
 }
 
-export function reactive<T extends object>(target: T): any;
+export function toRaw<T>(target: T): T {
+  const res = target && (target as unknown as Target)[ReactiveFlags.v_raw];
+  return res ? toRaw(res) : target;
+}
+
+export function reactive<T extends Object>(target: T): any;
 export function reactive(target: Target) {
   if (!isObject(target)) {
     warn("target is not an object.");
@@ -38,7 +44,14 @@ export function reactive(target: Target) {
         if (property === ReactiveFlags.v_reactive) {
           return true;
         } else if (property === ReactiveFlags.v_raw) {
-          return target;
+          if (
+            receiver === reactiveMap.get(target) ||
+            Object.getPrototypeOf(target) === Object.getPrototypeOf(receiver)
+          ) {
+            return target;
+          }
+
+          return;
         }
 
         let res = Reflect.get(target, property, receiver);
@@ -65,7 +78,7 @@ export function reactive(target: Target) {
       set(target, property, newValue, receiver) {
         let newVal = newValue;
         if (isReactive(newVal)) {
-          newVal = newVal[ReactiveFlags.v_raw];
+          newVal = toRaw(newVal);
         }
 
         Reflect.set(target, property, newVal, receiver);

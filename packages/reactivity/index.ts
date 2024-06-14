@@ -1,2 +1,2 @@
-export { reactive, isReactive, ReactiveFlags } from "./reactive";
+export { reactive, isReactive, toRaw, ReactiveFlags } from "./reactive";
 export type { Target } from "./reactive";
