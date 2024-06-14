@@ -1,4 +1,4 @@
-import { reactive, isReactive, toRaw } from "vue";
+import { reactive, isReactive, toRaw, ref, toRef } from "vue";
 
 /* 
 const original: any = { foo: 1 };
@@ -18,7 +18,8 @@ console.log("observed.gg is reactive? ", isReactive(observed.gg));
 /**
  * @description toRaw on object using reactive as prototype
  * */
-// debugger;
+
+/* 
 const original = { foo: 1 };
 const observed = reactive(original);
 const inherted = Object.create(observed);
@@ -26,3 +27,4 @@ const raw = toRaw(inherted);
 
 console.log("inherted: ", inherted);
 console.log("toRaw(inherted): ", toRaw(inherted));
+ */

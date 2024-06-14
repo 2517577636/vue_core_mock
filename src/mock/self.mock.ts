@@ -1,4 +1,4 @@
-import { reactive, isReactive, toRaw } from "@packages/reactivity";
+import { reactive, isReactive, toRaw, ref } from "@packages/reactivity";
 
 /**
  * @description setting a property with an unobserved value should wrap with reactive
@@ -32,6 +32,7 @@ console.log("self observed2: ", observed2);
 /**
  * @description toRaw on object using reactive as prototype
  *  */
+/* 
 const original = { foo: 1 };
 const observed = reactive(original);
 const inherted = Object.create(observed);
@@ -40,3 +41,24 @@ const raw = toRaw(inherted);
 console.log("self toRaw(inherted): ", raw);
 console.log("self inherted: ", inherted);
 console.log("self toRaw(inherted) === inherted", raw === inherted);
+ */
+
+/**
+ * @description skip
+ * Destructuring assignment
+ */
+/* 
+const original = {
+  foo: 1,
+  bar: 2,
+};
+
+const observed = ref(original);
+const obj = {
+  ...observed,
+};
+
+console.log("self ref observed: ", observed);
+console.log("self obj: ", obj);
+console.log("self obj.foo: ", obj.foo); 
+*/

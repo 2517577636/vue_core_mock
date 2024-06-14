@@ -143,4 +143,17 @@ describe("reactivity/reactive", () => {
     const raw = toRaw(obj);
     expect(raw).toBe(original);
   });
+
+  /**
+   * @description skip
+   * */
+  /* 
+  test("should not unwrap Ref<T>", () => {
+    const observedNumberRef = reactive(ref(1));
+    const observedObjectRef = reactive(ref({ foo: 1 }));
+
+    expect(isRef(observedNumberRef)).toBe(true);
+    expect(isRef(observedObjectRef)).toBe(true);
+  }); 
+  */
 });
