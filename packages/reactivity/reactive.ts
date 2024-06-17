@@ -99,6 +99,25 @@ export function reactive(target: Target) {
         return true;
       },
 
+      has(target, property) {
+        const isexist = Reflect.has(target, property);
+
+        let depsMap = targetMap.get(target);
+        if (!depsMap) {
+          depsMap = new Map();
+          targetMap.set(target, depsMap);
+        }
+
+        let deps = depsMap.get(property);
+        if (!deps) {
+          deps = new Map() as Dep;
+          depsMap.set(property, deps);
+        }
+        deps.set(activeEffect, 1);
+
+        return isexist;
+      },
+
       deleteProperty(target, property) {
         Reflect.deleteProperty(target, property);
         const depsMap = targetMap.get(target);
